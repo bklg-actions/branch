@@ -1,13 +1,18 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'env'
+description: 'Makes Snap related information available to other actions via outputs.'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  api_token:
+    description: 'Your Snap account API token'
     required: true
-    default: '1000'
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  branch_name:
+    description: 'The branch name'
+  branch_type:
+    description: 'The type of branch (task, effort or project)'
+  branch_is_ignored:
+    description: 'If the branch should be ignored'
+  branch_task_id:
+    description: 'The ID of the task to which this branch is associated'
 runs:
   using: 'node12'
   main: 'dist/index.js'
