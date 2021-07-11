@@ -1,13 +1,23 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'branch'
+description: 'Makes Backlog related branch information available to other actions in your workflow.'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  api_token:
+    description: 'Your Snap account API token'
     required: true
-    default: '1000'
+  debug:
+    description: 'If debug logging should be enabled'
+    required: false
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  ignored:
+    description: 'If the branch should be ignored'
+  matched:
+    description: 'If the branch name matched the required format'
+  id:
+    description: 'The ID of the entity type to which this branch is associated'
+  name:
+    description: 'The branch name'
+  type:
+    description: 'The type of branch (task, effort or project)'
 runs:
   using: 'node12'
   main: 'dist/index.js'
