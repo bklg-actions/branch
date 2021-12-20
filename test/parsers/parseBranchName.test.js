@@ -1,4 +1,4 @@
-const parseBranchName = require('../lib/branch');
+const { parseBranchName } = require('../../lib/parsers');
 
 test('parses task branches correctly', async () => {
   expect(parseBranchName('1234_task_branch')).toEqual(

@@ -16,6 +16,10 @@ outputs:
     description: 'The ID of the entity type to which this branch is associated'
   name:
     description: 'The branch name'
+  pull_request_number:
+    description: 'Number of the pull request (the one usually seen in the Github UI)'
+  repository_full_name:
+    description: 'Full name of the repository in the format org-name/repo-name'
   type:
     description: 'The type of branch (task, effort or project)'
 runs:

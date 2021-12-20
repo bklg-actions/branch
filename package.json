@@ -1,17 +1,17 @@
 {
-  "name": "branch-info",
+  "name": "branch",
   "version": "1.0.0",
   "description": "GitHub Action that makes Backlog related branch information available to other actions in your workflow.",
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint .",
     "build": "ncc build lib/index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
+    "test": "jest --detectOpenHandles --forceExit",
     "all": "npm run lint && npm run build && npm run test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bklg-actions/branch-info.git"
+    "url": "git+https://github.com/bklg-actions/branch.git"
   },
   "keywords": [
     "GitHub",
@@ -21,9 +21,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bklg-actions/branch-info/issues"
+    "url": "https://github.com/bklg-actions/branch/issues"
   },
-  "homepage": "https://github.com/bklg-actions/branch-info#readme",
+  "homepage": "https://github.com/bklg-actions/branch#readme",
   "dependencies": {
     "@actions/core": "^1.4.0",
     "@actions/github": "^5.0.0"

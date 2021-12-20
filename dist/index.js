@@ -1,37 +1,84 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 45:
+/***/ 763:
 /***/ ((module) => {
 
-let parseBranchName = function (branchName) {
-  const branchMatch = branchName.match(/^([iepx]?)(\d+)_/);
-  if (branchMatch === null) {
+const determineBranchName = (context) => {
+  switch (context.eventName) {
+    case 'pull_request':
+      return context.payload.pull_request.head.ref;
+    case 'delete':
+      if (context.payload.ref_type !== 'branch') {
+        throw `This action does not support the ${context.payload.ref_type} ref type`;
+      }
+
+      return context.payload.ref;
+    default:
+      throw `This action does not support the ${context.eventName} event type`;
+  }
+}
+
+const determineRepositoryFullName = (context) => {
+  return context.payload.repository.full_name;
+}
+
+module.exports = {
+  determineBranchName,
+  determineRepositoryFullName
+}
+
+
+/***/ }),
+
+/***/ 55:
+/***/ ((module) => {
+
+const parseBranchName = (branchName) => {
+  const result = branchName.match(/^([iepx]?)(\d+)_/);
+  if (result === null) {
     return false;
+  }
+
+  let branchType;
+
+  switch (result[1]) {
+    case 'e':
+      branchType = 'effort';
+      break;
+    case 'p':
+      branchType = 'project';
+      break;
+    case 'x':
+      branchType = null;
+      break;
+    default:
+      branchType = 'task';
   }
 
   return {
     name: branchName,
-    id: branchMatch[2],
-    ignored: branchMatch[1] === 'x',
-    type: determineBranchType(branchMatch[1])
+    id: result[2],
+    ignored: result[1] === 'x',
+    type: branchType
   };
 };
 
-let determineBranchType = function(branchModifier) {
-  switch (branchModifier) {
-    case 'e':
-      return 'effort';
-    case 'p':
-      return 'project';
-    case 'x':
-      return null;
-    default:
-      return 'task';
+const parseGithubRef = (ref) => {
+  const result = ref.match(/refs\/pull\/(\d+)\/merge/)
+  if (result === null) {
+    return false;
   }
-}
 
-module.exports = parseBranchName;
+  return {
+    pullRequestNumber: result[1],
+  };
+};
+
+module.exports = {
+  parseBranchName,
+  parseGithubRef
+};
 
 
 /***/ }),
@@ -6368,29 +6415,26 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(186);
 const { context } = __nccwpck_require__(438);
-const parseBranchName = __nccwpck_require__(45);
-
-const determineBranchName = () => {
-  switch (context.eventName) {
-    case 'pull_request':
-      return context.payload.pull_request.head.ref;
-    case 'delete':
-      if (context.payload.ref_type !== 'branch') {
-        throw `This action does not support the ${context.payload.ref_type} ref type`;
-      }
-
-      return context.payload.ref;
-    default:
-      throw `This action does not support the ${context.eventName} event type`;
-  }
-}
+const env = __nccwpck_require__(763)
+const parsers = __nccwpck_require__(55);
 
 async function run() {
   try {
-    core.debug(context);
+    console.log(context);
+    core.debug(context)
 
-    let branchName = determineBranchName();
-    const parsedBranch = parseBranchName(branchName);
+    const branchName = env.determineBranchName(context);
+    const repositoryFullName = env.determineRepositoryFullName(context);
+    const parsedGithubRef = parsers.parseGithubRef(context.ref);
+    const parsedBranch = parsers.parseBranchName(branchName);
+
+    if (repositoryFullName) {
+      core.setOutput("repository_full_name", repositoryFullName);
+    }
+
+    if (parsedGithubRef) {
+      core.setOutput("pull_request_number", parsedGithubRef.pullRequestNumber);
+    }
 
     if (parsedBranch) {
       core.setOutput('id', parsedBranch.id);
